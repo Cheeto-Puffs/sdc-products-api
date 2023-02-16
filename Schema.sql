@@ -52,8 +52,9 @@ product_id INTEGER
 ALTER TABLE styles ADD CONSTRAINT styles_pkey PRIMARY KEY (style_id);
 COPY styles (style_id, product_id, name, sale_price, original_price, default_style)
 FROM '/Users/kevinle/Downloads/products-data/styles.csv'
-DELIMITER ','
-CSV HEADER;
+WITH (FORMAT csv, HEADER true, NULL 'null');
+-- DELIMITER ','
+-- CSV HEADER;
 
 CREATE TABLE photos (
 photo_id BIGSERIAL,
