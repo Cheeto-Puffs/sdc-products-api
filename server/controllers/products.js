@@ -34,5 +34,14 @@ module.exports = {
     } catch (err) {
       res.status(400).send({ message: 'Error requesting styles', error: err})
     }
+  },
+
+  getRelatedProductsById: async (req, res) => {
+    try {
+      const relatedProducts = await model.getRelated(req.params.product_id)
+      res.status(200).send(relatedProducts)
+    } catch (err) {
+      res.status(400).send({ message: 'Error requesting related products', error: err })
+    }
   }
 }

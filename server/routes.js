@@ -8,4 +8,8 @@ Router.get('/products/:product_id', controller.getProductById)
 
 Router.get('/products/:product_id/styles', controller.getStylesById)
 
+Router.get('/products/:product_id/related', controller.getRelatedProductsById)
+
+
+
 module.exports = Router;
