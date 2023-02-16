@@ -2,18 +2,24 @@ require('dotenv')
 const pool = require('../db.js')
 
 module.exports = {
-  getAllProducts: function (count=5, page=1) {
-  return pool.query('SELECT * FROM products LIMIT $1', [count]);
-  },
+  getAllProducts: async (count=5, page=1) => {
+  const query = 'SELECT * FROM products LIMIT $1';
+  const queryArgs = [count]
+  const products = await pool.query(query, queryArgs)
+  return products.rows;
+},
 
-  getProduct: function (product_id) {
-    return pool.query('SELECT * FROM products WHERE product_id = $1', [product_id])
+  getProduct: async (product_id) => {
+    const query = 'SELECT * FROM products WHERE product_id = $1';
+    const queryArgs = [product_id]
+    const productInfo = await pool.query(query, queryArgs)
+    return productInfo.rows;
   },
 
   getProductStyles: async (product_id) => {
     const query = 'SELECT * FROM styles WHERE product_id = $1;'
-    const args = [product_id]
-    const styles = await pool.query(query, args)
+    const queryArgs = [product_id]
+    const styles = await pool.query(query, queryArgs)
     return styles.rows;
   },
 

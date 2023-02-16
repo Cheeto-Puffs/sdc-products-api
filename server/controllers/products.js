@@ -1,30 +1,22 @@
 const model = require('../models/products.js')
 module.exports = {
 
-  getProducts: function (req, res) {
-    console.log('GOOD!')
-    model.getAllProducts()
-      .then((results) => {
-        console.log(results.rows)
-        res.status(200).json(results.rows)
-        // res.sendStatus(200)
-      })
-      .catch(() => {
-        console.log('BAD!')
-        res.sendStatus(404)
-      })
-    },
+  getProducts: async (req, res) => {
+    try {
+      const products = await model.getAllProducts()
+      res.status(200).send(products)
+    } catch(err) {
+      res.status(400).send({ message: 'Error requesting styles', error: err})
+    }
+  },
 
-  getProductById: function (req, res) {
-    model.getProduct(req.params.product_id)
-      .then((results) => {
-        console.log(results.rows[0])
-        res.sendStatus(200)
-      })
-      .catch(() => {
-        console.log('BAD!')
-        res.sendStatus(404)
-      })
+  getProductById: async (req, res) => {
+    try {
+      const productInfo = await model.getProduct(req.params.product_id)
+      res.status(200).send(productInfo)
+    } catch (err) {
+      res.status(400).send({ message: 'Error requesting styles', error: err})
+    }
   },
 
   getStylesById: async (req, res) => {
