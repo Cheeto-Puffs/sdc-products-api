@@ -13,6 +13,7 @@ module.exports = {
   getProductById: async (req, res) => {
     try {
       const productInfo = await model.getProduct(req.params.product_id)
+
       res.status(200).send(productInfo)
     } catch (err) {
       res.status(400).send({ message: 'Error requesting styles', error: err})
