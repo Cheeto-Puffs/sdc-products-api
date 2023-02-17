@@ -10,10 +10,25 @@ module.exports = {
 },
 
   getProduct: async (product_id) => {
-    const query = 'SELECT * FROM products WHERE product_id = $1';
-    const queryArgs = [product_id]
-    const productInfo = await pool.query(query, queryArgs)
-    return productInfo.rows;
+    const query = {
+      name: 'fetch-product',
+      text: `SELECT json_build_object(
+        'id', $1::integer,
+        'campus', 'hr-rfp',
+        'name', name,
+        'slogan', slogan,
+        'description', description,
+        'category', category,
+        'default_price', default_price,
+        'features', (SELECT json_agg(json_build_object('feature', feature, 'value', value)) as features from features where product_id = $1::integer)
+        )
+        FROM products
+        WHERE product_id = $1::integer;`,
+        values: [product_id]
+      }
+
+    const productInfo = await pool.query(query)
+    return productInfo.rows[0].json_build_object;
   },
 
   getProductStyles: async (product_id) => {
