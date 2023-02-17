@@ -2,7 +2,7 @@ require('dotenv')
 const pool = require('../db.js')
 
 module.exports = {
-  getAllProducts: async (count=5, page=1) => {
+  getAllProducts: async (count=10, page=1) => {
   const query = 'SELECT * FROM products LIMIT $1';
   const queryArgs = [count]
   const products = await pool.query(query, queryArgs)
@@ -32,10 +32,15 @@ module.exports = {
   },
 
   getProductStyles: async (product_id) => {
-    const query = 'SELECT * FROM styles WHERE product_id = $1;'
-    const queryArgs = [product_id]
-    const styles = await pool.query(query, queryArgs)
-    return styles.rows;
+    const query = {
+      name: 'fetch-styles',
+      text: `SELECT json_object_agg(sku_id, json_build_object('quantity', quantity, 'size', size)) as skus
+      FROM skus
+      WHERE style_id = $1`,
+      values: [product_id]
+    }
+    const styles = await pool.query(query)
+    return styles.rows[0];
   },
 
   getRelated: async (product_id) => {
