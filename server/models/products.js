@@ -58,9 +58,11 @@ module.exports = {
   },
 
   getRelated: async (product_id) => {
-    const query = 'SELECT * FROM related WHERE product_id = $1;'
-    const queryArgs = [product_id]
-    const related = await pool.query(query, queryArgs)
-    return related.rows;
+    const query = {
+      text: 'select coalesce(array_agg(related_id), ARRAY[]::integer[]) as data from related where product_id = $1;',
+      values: [product_id]
+    }
+    const related = await pool.query(query)
+    return related.rows[0].data;
   }
 }
