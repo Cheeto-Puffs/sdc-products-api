@@ -5,18 +5,19 @@ CREATE DATABASE products_api;
 \c products_api;
 
 CREATE TABLE products (
-product_id BIGSERIAL,
+product_id SERIAL,
 name VARCHAR(100),
 slogan VARCHAR(500),
 description VARCHAR(1000),
 category VARCHAR(50),
-default_price INTEGER
+default_price VARCHAR(25)
 );
 ALTER TABLE products ADD CONSTRAINT products_pkey PRIMARY KEY (product_id);
 COPY products (product_id, name, slogan, description, category, default_price)
 FROM '/Users/kevinle/Downloads/products-data/product.csv'
 DELIMITER ','
 CSV HEADER;
+UPDATE products SET default_price = TO_CHAR(TO_NUMBER(default_price, '999999999999.99'), 'FM9999999990.00')
 
 CREATE TABLE related (
 id BIGSERIAL,
@@ -52,8 +53,9 @@ product_id INTEGER
 ALTER TABLE styles ADD CONSTRAINT styles_pkey PRIMARY KEY (style_id);
 COPY styles (style_id, product_id, name, sale_price, original_price, default_style)
 FROM '/Users/kevinle/Downloads/products-data/styles.csv'
-DELIMITER ','
-CSV HEADER;
+WITH (FORMAT csv, HEADER true, NULL 'null');
+-- DELIMITER ','
+-- CSV HEADER;
 
 CREATE TABLE photos (
 photo_id BIGSERIAL,
