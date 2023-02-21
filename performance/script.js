@@ -4,12 +4,18 @@ import { textSummary } from 'https://jslib.k6.io/k6-summary/0.0.2/index.js';
 import { randomIntBetween } from 'https://jslib.k6.io/k6-utils/1.4.0/index.js'
 
 export const options = {
+  summaryTrendStats: ['avg', 'min', 'med', 'max', 'p(95)', 'p(99)', 'p(99.99)'],
+  stages: [
+    { duration: '3m', target: 2048 }, // simulate ramp-up of traffic from 1 to 100 users over 5 minutes.
+    { duration: '5m', target: 2048 }, // stay at 100 users for 10 minutes
+    { duration: '3m', target: 0 }, // ramp-down to 0 users
+  ],
   thresholds: {
     http_req_failed: ['rate<0.01'], // http errors should be less than 1%
     http_req_duration: ['p(99)<1500'],
   },
-  vus: 16,
-  duration: '30s',
+  // vus: 2048,
+  // duration: '660s',
 }
 
 // test ALL ROUTES AT ONCE
@@ -52,10 +58,3 @@ export default function () {
     }
   })
 }
-
-// export function handleSummary(data) {
-//   return {
-//     'stdout': textSummary(data, { indent: '', enableColors: true }), // Show the text summary to stdout...
-//     // 'other/path/to/summary.json': JSON.stringify(data), // and a JSON with all the details...
-//   }
-// }
