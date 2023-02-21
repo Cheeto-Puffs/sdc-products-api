@@ -7,7 +7,7 @@ module.exports = {
       cacheEntry = JSON.parse(cacheEntry)
       return cacheEntry
     }
-    return null
+    return
   },
   setInCache: async (key, value) => {
     await redis.set(key, value)
