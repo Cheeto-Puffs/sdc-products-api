@@ -34,23 +34,46 @@ module.exports = {
   getProductStyles: async (product_id) => {
     const query = {
       name: 'fetch-styles',
-      text: `select json_build_object(
-        'product_id', product_id::varchar,
+      text: `SELECT json_build_object(
+        'product_id', products.product_id::varchar,
         'results', (
-          select json_agg(
-            json_build_object
-                ('style_id', style_id,
-                'name', name,
-                'original_price', original_price,
-                'sale_price', sale_price,
-                'default?', default_style,
-                'photos', (SELECT json_agg(json_build_object('thumbnail_url', thumbnail_url, 'url', url)) as photos FROM photos WHERE style_id = styles.style_id),
-                'skus', (SELECT json_object_agg(sku_id, json_build_object('quantity', quantity, 'size', size)) as skus FROM skus WHERE style_id = styles.style_id)))
+            coalesce(array_agg(
+                json_build_object(
+                    'style_id', style_id,
+                    'name', styles.name,
+                    'original_price', styles.original_price,
+                    'sale_price', styles.sale_price,
+                    'default?', styles.default_style,
+                    'photos', (
+                        SELECT json_agg(
+                            json_build_object(
+                                'thumbnail_url', thumbnail_url,
+                                'url', url
+                            )
+                        )
+                        FROM photos
+                        WHERE style_id = styles.style_id
+                    ),
+                    'skus', (
+                        SELECT json_object_agg(
+                            sku_id,
+                            json_build_object(
+                                'quantity', quantity,
+                                'size', size
+                            )
+                        )
+                        FROM skus
+                        WHERE style_id = styles.style_id
+                    )
+                )
+            )
+            , array[]::json[])
         )
-      ) as data
-      FROM styles
-      WHERE product_id = $1
-      GROUP BY product_id;`,
+    ) as data
+    FROM products
+    LEFT JOIN styles ON products.product_id = styles.product_id
+    WHERE products.product_id = $1
+    GROUP BY products.product_id;`,
       values: [product_id]
     }
     const styles = await pool.query(query)
