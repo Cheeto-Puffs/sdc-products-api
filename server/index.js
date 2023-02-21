@@ -7,7 +7,7 @@ const app = express();
 
 app.use(morgan('dev'));
 app.use(express.json());
-app.use('/api', router);
+app.use('/', router);
 
 app.listen(process.env.PORT, () => {
   console.log(`listening on port ${process.env.PORT}`)
