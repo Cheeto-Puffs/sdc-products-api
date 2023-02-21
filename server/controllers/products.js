@@ -55,13 +55,13 @@ module.exports = {
       let key = `product:${req.params.product_id}:related`
       const cacheEntry = await cache.getFromCache(key)
       if (cacheEntry) {
-        res.status(200).send(cacheEntry)
+        res.status(200).send([...cacheEntry, 'cache'])
         return
       }
 
       const relatedProducts = await model.getRelated(req.params.product_id)
       cache.setInCache(key, JSON.stringify(relatedProducts));
-      res.status(200).send(relatedProducts)
+      res.status(200).send([...relatedProducts, 'DB'])
     } catch (err) {
       res.status(400).send({ message: 'Error requesting related products by id', error: {err: err, message: err.message}})
     }
