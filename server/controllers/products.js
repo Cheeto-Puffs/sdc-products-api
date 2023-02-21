@@ -1,8 +1,7 @@
 const model = require('../models/products.js')
-const redis = require('../cache/redis.js')
+const cache = require('../cache/cache.js')
 
 module.exports = {
-
   getProducts: async (req, res) => {
     try {
       const products = await model.getAllProducts()
@@ -15,10 +14,10 @@ module.exports = {
   getProductById: async (req, res) => {
     try {
       // query the cache first if we find a result, return that result
-      let cacheEntry = await redis.get(`product:${req.params.product_id}`)
+      let key = `product:${req.params.product_id}`
+      let cacheEntry = await cache.getFromCache(key);
 
       if (cacheEntry) {
-        cacheEntry = JSON.parse(cacheEntry)
         res.status(200).send({ ... cacheEntry, 'source' : 'cache' })
         return
       }
@@ -26,7 +25,7 @@ module.exports = {
       const productInfo = await model.getProduct(req.params.product_id)
 
       // store results in the cache before we send back to the client
-      redis.set(`product:${req.params.product_id}`, JSON.stringify(productInfo))
+      cache.setInCache(`product:${req.params.product_id}`, JSON.stringify(productInfo))
 
       res.status(200).send({... productInfo, 'source': 'DB'})
     } catch (err) {
