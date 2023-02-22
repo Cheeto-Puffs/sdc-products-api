@@ -1,4 +1,4 @@
-const redis = require('./redis.js')
+const redis = require('../redis.js')
 
 module.exports = {
   getFromCache: async (key) => {
@@ -10,7 +10,7 @@ module.exports = {
     return
   },
   setInCache: async (key, value) => {
-    await redis.set(key, value)
+    await redis.set(key, value, 'EX', 660)
     return
   }
 }
