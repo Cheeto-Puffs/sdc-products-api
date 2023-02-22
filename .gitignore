@@ -4,3 +4,4 @@ node_modules/
 /server/data/
 /server/clean_data/
 scrap.sql
+productsAPI.sql
