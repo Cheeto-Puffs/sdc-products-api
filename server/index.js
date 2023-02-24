@@ -11,9 +11,10 @@ app.use(express.json());
 app.use('/', router);
 
 // LOADER_IO
-const filePath = process.env.LOADER_IO;
-Router.get(`/${filePath}`, (req, res) => {
-  res.sendFile(path.join(__dirname, filePath, '.txt'))
+const fileName = process.env.LOADER_IO;
+app.get(`/${fileName}`, (req, res) => {
+  console.log(`${process.env.LOADER_IO}`)
+  res.send(`${process.env.LOADER_IO}`)
 })
 
 app.listen(process.env.PORT, () => {
